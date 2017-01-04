@@ -70,7 +70,7 @@ class ClientServiceThread extends Thread {
                     + clientSocket.getInetAddress().getHostName());
 
             //sendMessage("Connection successful");
-            sendMessage("Welcome, Enter 1 to Register, 2 to Login.");
+            sendMessage("22Welcome, Enter 1 to Register, 2 to Login.");
             do{
                 try
                 {
