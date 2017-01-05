@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class EchoServer {
     public static void main(String[] args) throws Exception {
-        ServerSocket m_ServerSocket = new ServerSocket(2004,10);
+        ServerSocket m_ServerSocket = new ServerSocket(2004, 10);
         int id = 0;
         while (true) {
             Socket clientSocket = m_ServerSocket.accept();
@@ -37,7 +37,7 @@ class ClientServiceThread extends Thread {
     }
 
 
-   private ArrayList<Account> accounts = new ArrayList<Account>();
+    private ArrayList<Account> accounts = new ArrayList<Account>();
     private int accountLocation = 0;
     private String name;
     private String address;
@@ -46,23 +46,20 @@ class ClientServiceThread extends Thread {
     private String password;
 
 
-
-    void sendMessage(String msg)
-    {
-        try{
+    void sendMessage(String msg) {
+        try {
             out.writeObject(msg);
             out.flush();
             System.out.println("client>> " + msg);
-        }
-        catch(IOException ioException){
+        } catch (IOException ioException) {
             ioException.printStackTrace();
         }
     }
+
     public void run() {
         System.out.println("Accepted Client : ID - " + clientID + " : Address - "
                 + clientSocket.getInetAddress().getHostName());
-        try
-        {
+        try {
             out = new ObjectOutputStream(clientSocket.getOutputStream());
             out.flush();
             in = new ObjectInputStream(clientSocket.getInputStream());
@@ -70,39 +67,32 @@ class ClientServiceThread extends Thread {
                     + clientSocket.getInetAddress().getHostName());
 
             //sendMessage("Connection successful");
-            sendMessage("22Welcome, Enter 1 to Register, 2 to Login.");
-            do{
-                try
-                {
+            sendMessage("Welcome, Enter 1 to Register, 2 to Login.");
+            do {
+                try {
 
 
-
-
-                   // System.out.println("client>"+clientID+"  "+ message);
+                    // System.out.println("client>"+clientID+"  "+ message);
                     //if (message.equals("bye"))
                     //sendMessage("server got the following: "+message);
-                    message = (String)in.readObject();
+                    message = (String) in.readObject();
 
                     //if (message.contains("start")){
-                        //sendMessage("Welcome, Enter 1 to Register, 2 to Login.");
+                    //sendMessage("Welcome, Enter 1 to Register, 2 to Login.");
                     //}
 
-                    if (message.contains("1")){
-                         register();
-                    }
-
-                    else if (message.contains("2")){
+                    if (message.contains("1")) {
+                        register();
+                    } else if (message.contains("2")) {
                         login();
                     }
 
 
-
-                }
-                catch(ClassNotFoundException classnot){
+                } catch (ClassNotFoundException classnot) {
                     System.err.println("Data received in unknown format");
                 }
 
-            }while(!message.equals("bye"));
+            } while (!message.equals("bye"));
 
             System.out.println("Ending Client : ID - " + clientID + " : Address - "
                     + clientSocket.getInetAddress().getHostName());
@@ -110,7 +100,6 @@ class ClientServiceThread extends Thread {
             e.printStackTrace();
         }
     }
-
 
 
     public void register() throws IOException, ClassNotFoundException {
@@ -127,25 +116,25 @@ class ClientServiceThread extends Thread {
 
 
             sendMessage("Please enter your Name: ");
-            message = (String)in.readObject();
+            message = (String) in.readObject();
             name = message;
 
 
             sendMessage("Please Enter Address: ");
-            message = (String)in.readObject();
+            message = (String) in.readObject();
             address = message;
 
 
-             accNumber = UUID.randomUUID().toString();
+            accNumber = UUID.randomUUID().toString();
 
 
             sendMessage("Please Enter username: ");
-            message = (String)in.readObject();
+            message = (String) in.readObject();
             userName = message;
 
 
             sendMessage("Please Enter Password: ");
-            message = (String)in.readObject();
+            message = (String) in.readObject();
             password = message;
 
 
@@ -158,7 +147,6 @@ class ClientServiceThread extends Thread {
             System.out.println("Password: " + password);
 
 
-
             // prompt user to confirm details are correct
             // or re-enter them
 
@@ -166,19 +154,18 @@ class ClientServiceThread extends Thread {
             accounts.add(new Account(name, address, accNumber, userName, password, 0));
 
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
 
         System.out.println("Account Created Successfully!");
         sendMessage("\nAccount Created Successfully! press any key to continue");
-        message = (String)in.readObject();
+        message = (String) in.readObject();
 
 
         sendMessage("Press 1 to login");
-        message = (String)in.readObject();
+        message = (String) in.readObject();
 
         try {
             login();
@@ -206,23 +193,22 @@ class ClientServiceThread extends Thread {
         // check user account array to see if user exists.
         // if user does not exist prompt them to create an account, if yes call the register method
 
-       //sendMessage("///////  LOGIN  ///////////");
+        //sendMessage("///////  LOGIN  ///////////");
 
         sendMessage("Please Enter username: ");
-        message = (String)in.readObject();
+        message = (String) in.readObject();
         userName = message;
 
 
+        while (userNameFound == false) {
 
-        while (userNameFound == false){
+            for (int i = 0; i < accounts.size(); i++) {
 
-            for (int i = 0; i <accounts.size(); i++){
-
-                if (accounts.get(i).getUserName().equalsIgnoreCase(userName)){
+                if (accounts.get(i).getUserName().equalsIgnoreCase(userName)) {
                     userNameFound = true;
 
                 }
-                if (i == accounts.size()){
+                if (i == accounts.size()) {
                     sendMessage("UserName not found.");
                     break;
                 }
@@ -230,26 +216,25 @@ class ClientServiceThread extends Thread {
         }
 
 
-        if (userNameFound){
+        if (userNameFound) {
 
             sendMessage("Please Enter Password: ");
-            message = (String)in.readObject();
+            message = (String) in.readObject();
             password = message;
 
 
+            while (passwordFound == false) {
 
-            while (passwordFound == false){
+                for (int i = 0; i < accounts.size(); i++) {
 
-                for (int i = 0; i <accounts.size(); i++){
-
-                    if (accounts.get(i).getPassword().equalsIgnoreCase(password)){
+                    if (accounts.get(i).getPassword().equalsIgnoreCase(password)) {
                         passwordFound = true;
                         accountLocation = i;
 
 
                     }
 
-                    if (i == accounts.size()){
+                    if (i == accounts.size()) {
                         sendMessage("Incorrect Password.");
                         break;
 
@@ -261,19 +246,16 @@ class ClientServiceThread extends Thread {
         }
 
 
-        if (userNameFound && passwordFound == true){
+        if (userNameFound && passwordFound == true) {
 
 
             System.out.println("User Logged in!");
             showLoggedInMenu();
-        }
-        else if (userNameFound == false){
+        } else if (userNameFound == false) {
+            login();
+        } else if (passwordFound == false) {
             login();
         }
-        else  if (passwordFound == false){
-            login();
-        }
-
 
 
         // if the user exists ask for username and password and if they match the ones in the array grant them access
@@ -287,19 +269,17 @@ class ClientServiceThread extends Thread {
     }
 
 
-
-
-    public void showLoggedInMenu(){
+    public void showLoggedInMenu() throws IOException, ClassNotFoundException {
 
         String menuInput = "";
 
         sendMessage("\nAvailable Balance: € " + accounts.get(accountLocation).getBalance()
-                    +"\n 1. Change your Account Details "
-                    +"\n 2. Make Lodgement "
-                    +"\n 3. Make Withdrawel "
-                    +"\n 4. View last 10 Transactions");
+                + "\n 1. Change your Account Details "
+                + "\n 2. Make Lodgement "
+                + "\n 3. Make Withdrawel "
+                + "\n 4. View last 10 Transactions");
         try {
-            menuInput = (String)in.readObject();
+            menuInput = (String) in.readObject();
             //int a = (Integer) in.readObject();
 
 
@@ -309,18 +289,140 @@ class ClientServiceThread extends Thread {
             e.printStackTrace();
         }
 
-        if (menuInput.equalsIgnoreCase("1"))
+        if (menuInput.equalsIgnoreCase("1")) {
             System.out.println("Option 1 Selected");
+            changeAccountDetails();
+        }
 
-        if (menuInput.equalsIgnoreCase("2"))
+
+        if (menuInput.equalsIgnoreCase("2")) {
             System.out.println("Option 2 Selected ");
+            lodgement();
+        }
 
-        if (menuInput.equalsIgnoreCase("3"))
+
+        if (menuInput.equalsIgnoreCase("3")) {
             System.out.println("Option 3 Selected");
+            withDrawal();
+        }
 
-        if (menuInput.equalsIgnoreCase("4"))
+
+        if (menuInput.equalsIgnoreCase("4")) {
             System.out.println("Option 4 Selected");
+            viewLast10Transactions();
+        }
 
+
+    }
+
+
+    public void changeAccountDetails() throws IOException, ClassNotFoundException {
+
+        sendMessage("\n Change Details: " +
+                "\n Enter 1: Change Name " +
+                "\n Enter 2: Change Address " +
+                "\n Enter 3: Change Username " +
+                "\n Enter 4: Change Password ");
+
+        int changeDetailsOption = (Integer) in.readObject();
+
+
+        switch (changeDetailsOption) {
+
+            case 1:
+                sendMessage("Please enter your Name: ");
+                message = (String) in.readObject();
+                name = message;
+
+                accounts.get(accountLocation).setName(name);
+                sendMessage("Name Changed Successfully, Press 1 to Return to Menu");
+                message = (String) in.readObject();
+                break;
+
+
+            case 2:
+                sendMessage("Please Enter Address: ");
+                message = (String) in.readObject();
+                address = message;
+
+                accounts.get(accountLocation).setAddress(address);
+                sendMessage("Address Changed Successfully, Press 1 to Return to Menu");
+                message = (String) in.readObject();
+                break;
+
+
+            case 3:
+                sendMessage("Please Enter username: ");
+                message = (String) in.readObject();
+                userName = message;
+
+                accounts.get(accountLocation).setUserName(userName);
+                sendMessage("UserName Changed Successfully, Press 1 to Return to Menu");
+                message = (String) in.readObject();
+                break;
+
+
+            case 4:
+                sendMessage("Please Enter Password: ");
+                message = (String) in.readObject();
+                password = message;
+
+                accounts.get(accountLocation).setPassword(password);
+                sendMessage("Password Changed Successfully, Press 1 to Return to Menu");
+                message = (String) in.readObject();
+                break;
+
+        }
+
+        showLoggedInMenu();
+
+    }
+
+    public void lodgement() throws IOException, ClassNotFoundException {
+
+        double amount;
+
+        sendMessage("Please Enter Lodgement Amount: ");
+        amount = (Double) in.readObject();
+
+        accounts.get(accountLocation).setBalance(1, amount);
+        accounts.get(accountLocation).addTransaction(1, amount);
+
+        sendMessage("Amount €" + amount + " Lodged Succesfully. Press 1 to return to Menu");
+        message = (String) in.readObject();
+
+
+        showLoggedInMenu();
+    }
+
+
+    public void withDrawal() throws IOException, ClassNotFoundException {
+
+        double amount;
+
+
+        sendMessage("\nPlease Enter Withdrawal Amount: ");
+        amount = (Double) in.readObject();
+
+        accounts.get(accountLocation).setBalance(2, amount);
+        accounts.get(accountLocation).addTransaction(2, amount);
+
+        sendMessage("\nAmount €" + amount + " Withdrawn Successfully. Press 1 to return to Menu");
+        message = (String) in.readObject();
+
+
+        showLoggedInMenu();
+    }
+
+
+    public void viewLast10Transactions() throws IOException, ClassNotFoundException {
+
+
+        sendMessage("Q: " + accounts.get(accountLocation).getLast10Transactions() + " Press 1 to return to menu");
+        message = (String) in.readObject();
+
+
+        showLoggedInMenu();
 
     }
 

@@ -1,3 +1,9 @@
+
+
+
+import java.util.*;
+
+
 /**
  * Created by AndrewIrwin on 01/01/2017.
  */
@@ -10,6 +16,8 @@ public class Account {
     private String userName;
     private String password;
     private double balance;
+    private Queue<String> q = new LinkedList<String>();
+
 
 
 
@@ -77,11 +85,49 @@ public class Account {
         return balance;
     }
 
-    public void setBalance(double balance) {
-        this.balance = balance;
+    public void setBalance(int option, double balance) {
+
+
+
+        if (option == 1)
+        this.balance += balance;
+
+
+        else if (option == 2)
+            this.balance -= balance;
     }
 
 
+
+
+
+    public void addTransaction(int option, double transaction){
+
+        String qTransaction;
+
+
+        if (q.size() >= 10)
+            q.remove();
+
+
+        qTransaction = Double.toString(transaction);
+
+        if (option == 1) {
+            qTransaction = "+" + qTransaction;
+        }
+
+        else if (option == 2) {
+            qTransaction = "-" + qTransaction;
+        }
+
+        q.add(qTransaction);
+
+    }
+
+
+    public Queue<String> getLast10Transactions() {
+        return q;
+    }
 
 
 }
