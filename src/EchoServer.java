@@ -6,7 +6,6 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.UUID;
 
 public class EchoServer {
@@ -99,6 +98,30 @@ class ClientServiceThread extends Thread {
         // then read in objects from file and add to accounts list
 
 
+        //FileInputStream fis = new FileInputStream("myFile.ser");
+        //ObjectInputStream ois = new ObjectInputStream(fis);
+        //Account result = (Account) ois.readObject();
+
+/*
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream("myFile.ser");
+            while (true){
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                accounts.add((Account) ois.readObject());
+            }
+        }catch (EOFException e){
+            e.printStackTrace();
+
+        }
+        finally {
+            if (fis != null)
+                fis.close();
+        }
+
+        System.out.println("acounts: " + accounts);
+        */
+
 
         sendMessage("Welcome, Enter 1 to Register, 2 to Login.");
         clientResponse = (String) in.readObject();
@@ -163,6 +186,20 @@ class ClientServiceThread extends Thread {
 
             // print object to file here
             // set temp object then write temp object to file
+
+
+            Account temp = new Account(name, address, accNumber, userName, password, 0);
+
+
+            //String fileName = "data.bin";
+
+           FileOutputStream fos = new FileOutputStream("myFile.ser");
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(temp);
+            oos.close();
+            System.out.println("File Written");
+
+
             accounts.add(new Account(name, address, accNumber, userName, password, 0));
 
 
@@ -269,9 +306,9 @@ class ClientServiceThread extends Thread {
             System.out.println("User Logged in!");
             showLoggedInMenu();
         } else if (userNameFound == false) {
-            login();
+            mainMenu();
         } else if (passwordFound == false) {
-            login();
+            mainMenu();
         }
 
 
