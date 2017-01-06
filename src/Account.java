@@ -1,13 +1,14 @@
 
 
 
+import java.io.Serializable;
 import java.util.*;
 
 
 /**
  * Created by AndrewIrwin on 01/01/2017.
  */
-public class Account {
+public class Account implements Serializable {
 
 
     private String Name;

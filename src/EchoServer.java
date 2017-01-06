@@ -2,9 +2,7 @@
  * Created by AndrewIrwin on 01/01/2017.
  */
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -25,7 +23,7 @@ public class EchoServer {
 
 class ClientServiceThread extends Thread {
     Socket clientSocket;
-    String message;
+    String clientResponse;
     int clientID = -1;
     boolean running = true;
     ObjectOutputStream out;
@@ -66,33 +64,19 @@ class ClientServiceThread extends Thread {
             System.out.println("Accepted Client : ID - " + clientID + " : Address - "
                     + clientSocket.getInetAddress().getHostName());
 
-            //sendMessage("Connection successful");
-            sendMessage("Welcome, Enter 1 to Register, 2 to Login.");
+
             do {
                 try {
 
 
-                    // System.out.println("client>"+clientID+"  "+ message);
-                    //if (message.equals("bye"))
-                    //sendMessage("server got the following: "+message);
-                    message = (String) in.readObject();
-
-                    //if (message.contains("start")){
-                    //sendMessage("Welcome, Enter 1 to Register, 2 to Login.");
-                    //}
-
-                    if (message.contains("1")) {
-                        register();
-                    } else if (message.contains("2")) {
-                        login();
-                    }
+                   mainMenu();
 
 
                 } catch (ClassNotFoundException classnot) {
                     System.err.println("Data received in unknown format");
                 }
 
-            } while (!message.equals("bye"));
+            } while (!clientResponse.equals("bye"));
 
             System.out.println("Ending Client : ID - " + clientID + " : Address - "
                     + clientSocket.getInetAddress().getHostName());
@@ -102,40 +86,66 @@ class ClientServiceThread extends Thread {
     }
 
 
-    public void register() throws IOException, ClassNotFoundException {
+    public void mainMenu() throws IOException, ClassNotFoundException {
 
-        Scanner console = new Scanner(System.in);
+
+        // read object from file here
+        // add object to array list
+
+        // when reading in object from file check to see account number does not already exist
+        // in object array list.
+
+        // clear accounts list
+        // then read in objects from file and add to accounts list
+
+
+
+        sendMessage("Welcome, Enter 1 to Register, 2 to Login.");
+        clientResponse = (String) in.readObject();
+
+
+
+        if (clientResponse.contains("1")) {
+            register();
+        } else if (clientResponse.contains("2")) {
+            login();
+        }
+
+
+    }
+
+
+    public void register() throws IOException, ClassNotFoundException {
 
 
         // enter user name and details etc.
 
-        //System.out.println("Please enter your Name: ");
-        //name = console.nextLine();
+
 
         try {
 
 
             sendMessage("Please enter your Name: ");
-            message = (String) in.readObject();
-            name = message;
+            clientResponse = (String) in.readObject();
+            name = clientResponse;
 
 
             sendMessage("Please Enter Address: ");
-            message = (String) in.readObject();
-            address = message;
+            clientResponse = (String) in.readObject();
+            address = clientResponse;
 
 
             accNumber = UUID.randomUUID().toString();
 
 
             sendMessage("Please Enter username: ");
-            message = (String) in.readObject();
-            userName = message;
+            clientResponse = (String) in.readObject();
+            userName = clientResponse;
 
 
             sendMessage("Please Enter Password: ");
-            message = (String) in.readObject();
-            password = message;
+            clientResponse = (String) in.readObject();
+            password = clientResponse;
 
 
             //printout details
@@ -151,7 +161,13 @@ class ClientServiceThread extends Thread {
             // or re-enter them
 
 
+            // print object to file here
+            // set temp object then write temp object to file
             accounts.add(new Account(name, address, accNumber, userName, password, 0));
+
+
+
+
 
 
         } catch (Exception e) {
@@ -161,25 +177,26 @@ class ClientServiceThread extends Thread {
 
         System.out.println("Account Created Successfully!");
         sendMessage("\nAccount Created Successfully! press any key to continue");
-        message = (String) in.readObject();
+        clientResponse = (String) in.readObject();
 
 
-        sendMessage("Press 1 to login");
-        message = (String) in.readObject();
+        sendMessage("Press 1 to login, Press 2 Create another Account");
+        clientResponse = (String) in.readObject();
 
-        try {
-            login();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        if (clientResponse.equalsIgnoreCase("1")) {
+
+            try {
+                login();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
 
-        // then store as object in array.
-
-        // then user account is created.
-
-        // login method.
+        else if (clientResponse.equalsIgnoreCase("2")){
+            register();
+        }
 
     }
 
@@ -196,8 +213,8 @@ class ClientServiceThread extends Thread {
         //sendMessage("///////  LOGIN  ///////////");
 
         sendMessage("Please Enter username: ");
-        message = (String) in.readObject();
-        userName = message;
+        clientResponse = (String) in.readObject();
+        userName = clientResponse;
 
 
         while (userNameFound == false) {
@@ -219,8 +236,8 @@ class ClientServiceThread extends Thread {
         if (userNameFound) {
 
             sendMessage("Please Enter Password: ");
-            message = (String) in.readObject();
-            password = message;
+            clientResponse = (String) in.readObject();
+            password = clientResponse;
 
 
             while (passwordFound == false) {
@@ -258,12 +275,7 @@ class ClientServiceThread extends Thread {
         }
 
 
-        // if the user exists ask for username and password and if they match the ones in the array grant them access
 
-        //once logged in the user will be displayed with their balance and a new menu.
-        // make lodgement
-        // make withdrawel
-        // view last 10 transactions.
         // logout
 
     }
@@ -276,8 +288,9 @@ class ClientServiceThread extends Thread {
         sendMessage("\nAvailable Balance: € " + accounts.get(accountLocation).getBalance()
                 + "\n 1. Change your Account Details "
                 + "\n 2. Make Lodgement "
-                + "\n 3. Make Withdrawel "
-                + "\n 4. View last 10 Transactions");
+                + "\n 3. Make Withdrawal "
+                + "\n 4. View last 10 Transactions "
+                + "\n 5. Logout ");
         try {
             menuInput = (String) in.readObject();
             //int a = (Integer) in.readObject();
@@ -312,6 +325,11 @@ class ClientServiceThread extends Thread {
             viewLast10Transactions();
         }
 
+        if (menuInput.equalsIgnoreCase("5")) {
+            System.out.println("Option 5 Selected");
+            mainMenu();
+        }
+
 
     }
 
@@ -324,52 +342,52 @@ class ClientServiceThread extends Thread {
                 "\n Enter 3: Change Username " +
                 "\n Enter 4: Change Password ");
 
-        int changeDetailsOption = (Integer) in.readObject();
+        int changeDetailsOption = Integer.parseInt((String) in.readObject());
 
 
         switch (changeDetailsOption) {
 
             case 1:
-                sendMessage("Please enter your Name: ");
-                message = (String) in.readObject();
-                name = message;
+                sendMessage("Please enter your Name, Current: " + accounts.get(accountLocation).getName());
+                clientResponse = (String) in.readObject();
+                name = clientResponse;
 
                 accounts.get(accountLocation).setName(name);
                 sendMessage("Name Changed Successfully, Press 1 to Return to Menu");
-                message = (String) in.readObject();
+                clientResponse = (String) in.readObject();
                 break;
 
 
             case 2:
-                sendMessage("Please Enter Address: ");
-                message = (String) in.readObject();
-                address = message;
+                sendMessage("Please Enter Address, Current: " + accounts.get(accountLocation).getAddress());
+                clientResponse = (String) in.readObject();
+                address = clientResponse;
 
                 accounts.get(accountLocation).setAddress(address);
                 sendMessage("Address Changed Successfully, Press 1 to Return to Menu");
-                message = (String) in.readObject();
+                clientResponse = (String) in.readObject();
                 break;
 
 
             case 3:
-                sendMessage("Please Enter username: ");
-                message = (String) in.readObject();
-                userName = message;
+                sendMessage("Please Enter username, Current: " + accounts.get(accountLocation).getUserName());
+                clientResponse = (String) in.readObject();
+                userName = clientResponse;
 
                 accounts.get(accountLocation).setUserName(userName);
                 sendMessage("UserName Changed Successfully, Press 1 to Return to Menu");
-                message = (String) in.readObject();
+                clientResponse = (String) in.readObject();
                 break;
 
 
             case 4:
-                sendMessage("Please Enter Password: ");
-                message = (String) in.readObject();
-                password = message;
+                sendMessage("Please Enter Password, Current: " + accounts.get(accountLocation).getPassword());
+                clientResponse = (String) in.readObject();
+                password = clientResponse;
 
                 accounts.get(accountLocation).setPassword(password);
                 sendMessage("Password Changed Successfully, Press 1 to Return to Menu");
-                message = (String) in.readObject();
+                clientResponse = (String) in.readObject();
                 break;
 
         }
@@ -383,13 +401,13 @@ class ClientServiceThread extends Thread {
         double amount;
 
         sendMessage("Please Enter Lodgement Amount: ");
-        amount = (Double) in.readObject();
+        amount = Double.parseDouble((String) in.readObject());
 
         accounts.get(accountLocation).setBalance(1, amount);
         accounts.get(accountLocation).addTransaction(1, amount);
 
         sendMessage("Amount €" + amount + " Lodged Succesfully. Press 1 to return to Menu");
-        message = (String) in.readObject();
+        clientResponse = (String) in.readObject();
 
 
         showLoggedInMenu();
@@ -402,13 +420,21 @@ class ClientServiceThread extends Thread {
 
 
         sendMessage("\nPlease Enter Withdrawal Amount: ");
-        amount = (Double) in.readObject();
+        amount = Double.parseDouble((String) in.readObject());
+
+        if (accounts.get(accountLocation).getBalance() - amount <= -1000){
+
+            sendMessage("Sorry Insufficient funds, €1000 credit limit reached!, Press any key to return.");
+            clientResponse = (String) in.readObject();
+
+            showLoggedInMenu();
+        }
 
         accounts.get(accountLocation).setBalance(2, amount);
         accounts.get(accountLocation).addTransaction(2, amount);
 
         sendMessage("\nAmount €" + amount + " Withdrawn Successfully. Press 1 to return to Menu");
-        message = (String) in.readObject();
+        clientResponse = (String) in.readObject();
 
 
         showLoggedInMenu();
@@ -419,7 +445,7 @@ class ClientServiceThread extends Thread {
 
 
         sendMessage("Q: " + accounts.get(accountLocation).getLast10Transactions() + " Press 1 to return to menu");
-        message = (String) in.readObject();
+        clientResponse = (String) in.readObject();
 
 
         showLoggedInMenu();
