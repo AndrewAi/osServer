@@ -122,6 +122,50 @@ class ClientServiceThread extends Thread {
         System.out.println("acounts: " + accounts);
         */
 
+        /*ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("javaObjects.txt"));
+        Account readCourse = (Account) objectInputStream.readObject();
+        System.out.println("Account Name: " + readCourse.getName());
+        */
+
+        // if file exists read objects from file while file not eof
+        // add objects to array while file not eof.
+        // if file does not exist , tell user no accounts exist so to register an account.
+
+        try {
+
+           /* ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("javaObjects.txt"));
+            Account readCourse = (Account) objectInputStream.readObject();
+            System.out.println("Account Name: " + readCourse.getName());
+            objectInputStream.close();
+            accounts.add(readCourse);
+            */
+
+            FileInputStream fis= new FileInputStream("object.ser");
+            ObjectInputStream ois= new ObjectInputStream(fis);
+
+            if (!accounts.isEmpty()){
+                accounts.clear();
+            }
+
+            accounts = (ArrayList<Account>)ois.readObject();
+
+
+
+            for (int i =  0; i < accounts.size(); i++){
+
+                System.out.println("Name : " + accounts.get(i).getName());
+            }
+
+
+        }
+        catch (FileNotFoundException e){
+            e.printStackTrace();
+            sendMessage("No Accounts Exist, Please Press 1 to register Account");
+            clientResponse = (String) in.readObject();
+            register();
+
+        }
+
 
         sendMessage("Welcome, Enter 1 to Register, 2 to Login.");
         clientResponse = (String) in.readObject();
@@ -188,17 +232,36 @@ class ClientServiceThread extends Thread {
             // set temp object then write temp object to file
 
 
-            Account temp = new Account(name, address, accNumber, userName, password, 0);
+           // Account temp = new Account(name, address, accNumber, userName, password, 0);
+
+            //ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("javaObjects.txt"));
+
+            /*
+            objectOutputStream.writeObject(temp);
+            objectOutputStream.flush();
+            objectOutputStream.close();
+            System.out.println("File Written");
+            */
+
+
+           /* ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("javaObjects.txt"));
+            Account readCourse = (Account) objectInputStream.readObject();
+            System.out.println("Account Name: " + readCourse.getName());
+            objectInputStream.close();
+            */
+
+
 
 
             //String fileName = "data.bin";
 
+            /*
            FileOutputStream fos = new FileOutputStream("myFile.ser");
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(temp);
             oos.close();
             System.out.println("File Written");
-
+            */
 
             accounts.add(new Account(name, address, accNumber, userName, password, 0));
 
@@ -364,6 +427,32 @@ class ClientServiceThread extends Thread {
 
         if (menuInput.equalsIgnoreCase("5")) {
             System.out.println("Option 5 Selected");
+
+            File file = new File("object.ser");
+
+            if (file.exists()) {
+
+                if (file.delete()) {
+                    System.out.println(file.getName() + " is deleted");
+                } else {
+                    System.out.println("Delete Operation failed");
+                }
+            }
+
+
+            try {
+                FileOutputStream fop = new FileOutputStream("object.ser");
+                ObjectOutputStream oos = new ObjectOutputStream(fop);
+                oos.writeObject(accounts);
+
+
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+
             mainMenu();
         }
 
