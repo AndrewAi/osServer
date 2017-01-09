@@ -2,6 +2,8 @@
  * Created by AndrewIrwin on 01/01/2017.
  */
 
+import com.sun.xml.internal.bind.v2.TODO;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -38,7 +40,7 @@ class ClientServiceThread extends Thread {
     private int accountLocation = 0;
     private String name;
     private String address;
-    private String accNumber;
+    private String accountNumber;
     private String userName;
     private String password;
 
@@ -68,14 +70,14 @@ class ClientServiceThread extends Thread {
                 try {
 
 
-                   mainMenu();
+                    mainMenu();
 
 
                 } catch (ClassNotFoundException classnot) {
                     System.err.println("Data received in unknown format");
                 }
 
-            } while (!clientResponse.equals("bye"));
+            } while (!clientResponse.equalsIgnoreCase("exit"));
 
             System.out.println("Ending Client : ID - " + clientID + " : Address - "
                     + clientSocket.getInetAddress().getHostName());
@@ -91,91 +93,53 @@ class ClientServiceThread extends Thread {
         // read object from file here
         // add object to array list
 
-        // when reading in object from file check to see account number does not already exist
-        // in object array list.
 
         // clear accounts list
         // then read in objects from file and add to accounts list
 
 
-        //FileInputStream fis = new FileInputStream("myFile.ser");
-        //ObjectInputStream ois = new ObjectInputStream(fis);
-        //Account result = (Account) ois.readObject();
 
-/*
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream("myFile.ser");
-            while (true){
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                accounts.add((Account) ois.readObject());
-            }
-        }catch (EOFException e){
-            e.printStackTrace();
-
-        }
-        finally {
-            if (fis != null)
-                fis.close();
-        }
-
-        System.out.println("acounts: " + accounts);
-        */
-
-        /*ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("javaObjects.txt"));
-        Account readCourse = (Account) objectInputStream.readObject();
-        System.out.println("Account Name: " + readCourse.getName());
-        */
-
-        // if file exists read objects from file while file not eof
+        // if file exists read objects from file. while file not eof
         // add objects to array while file not eof.
         // if file does not exist , tell user no accounts exist so to register an account.
 
         try {
 
-           /* ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("javaObjects.txt"));
-            Account readCourse = (Account) objectInputStream.readObject();
-            System.out.println("Account Name: " + readCourse.getName());
-            objectInputStream.close();
-            accounts.add(readCourse);
-            */
 
-            FileInputStream fis= new FileInputStream("object.ser");
-            ObjectInputStream ois= new ObjectInputStream(fis);
 
-            if (!accounts.isEmpty()){
+            FileInputStream fis = new FileInputStream("object.ser");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+
+            if (!accounts.isEmpty()) {
                 accounts.clear();
             }
 
-            accounts = (ArrayList<Account>)ois.readObject();
+            accounts = (ArrayList<Account>) ois.readObject();
 
 
+            for (Account account: accounts) {
 
-            for (int i =  0; i < accounts.size(); i++){
-
-                System.out.println("Name : " + accounts.get(i).getName());
+                System.out.println("Name : " + account.getName());
             }
 
 
-        }
-        catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
-            sendMessage("No Accounts Exist, Please Press 1 to register Account");
+            sendMessage("Welcome, No Accounts Exist, Please Press any key to register Account");
             clientResponse = (String) in.readObject();
             register();
 
         }
 
 
-        sendMessage("Welcome, Enter 1 to Register, 2 to Login.");
+        sendMessage("Welcome, Enter 1 to Login, 2 to Register. type exit to Exit.");
         clientResponse = (String) in.readObject();
 
 
-
         if (clientResponse.contains("1")) {
-            register();
-        } else if (clientResponse.contains("2")) {
             login();
+        } else if (clientResponse.contains("2")) {
+            register();
         }
 
 
@@ -186,8 +150,6 @@ class ClientServiceThread extends Thread {
 
 
         // enter user name and details etc.
-
-
 
         try {
 
@@ -201,8 +163,8 @@ class ClientServiceThread extends Thread {
             clientResponse = (String) in.readObject();
             address = clientResponse;
 
-
-            accNumber = UUID.randomUUID().toString();
+            // use below line to generate unique and random number,letter,symbol sequence to be used for account number
+            accountNumber = UUID.randomUUID().toString();
 
 
             sendMessage("Please Enter username: ");
@@ -219,55 +181,18 @@ class ClientServiceThread extends Thread {
 
             System.out.println("Name: " + name);
             System.out.println("Address: " + address);
-            System.out.println("accNumber: " + accNumber);
+            System.out.println("accountNumber: " + accountNumber);
             System.out.println("UserName: " + userName);
             System.out.println("Password: " + password);
 
 
-            // prompt user to confirm details are correct
+            // TODO  prompt user to confirm details are correct
             // or re-enter them
 
 
-            // print object to file here
-            // set temp object then write temp object to file
 
 
-           // Account temp = new Account(name, address, accNumber, userName, password, 0);
-
-            //ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("javaObjects.txt"));
-
-            /*
-            objectOutputStream.writeObject(temp);
-            objectOutputStream.flush();
-            objectOutputStream.close();
-            System.out.println("File Written");
-            */
-
-
-           /* ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("javaObjects.txt"));
-            Account readCourse = (Account) objectInputStream.readObject();
-            System.out.println("Account Name: " + readCourse.getName());
-            objectInputStream.close();
-            */
-
-
-
-
-            //String fileName = "data.bin";
-
-            /*
-           FileOutputStream fos = new FileOutputStream("myFile.ser");
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(temp);
-            oos.close();
-            System.out.println("File Written");
-            */
-
-            accounts.add(new Account(name, address, accNumber, userName, password, 0));
-
-
-
-
+            accounts.add(new Account(name, address, accountNumber, userName, password, 0));
 
 
         } catch (Exception e) {
@@ -292,9 +217,7 @@ class ClientServiceThread extends Thread {
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-        }
-
-        else if (clientResponse.equalsIgnoreCase("2")){
+        } else if (clientResponse.equalsIgnoreCase("2")) {
             register();
         }
 
@@ -310,73 +233,58 @@ class ClientServiceThread extends Thread {
         // check user account array to see if user exists.
         // if user does not exist prompt them to create an account, if yes call the register method
 
-        //sendMessage("///////  LOGIN  ///////////");
 
         sendMessage("Please Enter username: ");
         clientResponse = (String) in.readObject();
         userName = clientResponse;
 
-
-        while (userNameFound == false) {
-
-            for (int i = 0; i < accounts.size(); i++) {
-
-                if (accounts.get(i).getUserName().equalsIgnoreCase(userName)) {
-                    userNameFound = true;
-
-                }
-                if (i == accounts.size()) {
-                    sendMessage("UserName not found.");
-                    break;
-                }
+        for (Account account : accounts) {
+            if (account.getUserName().equalsIgnoreCase(clientResponse)) {
+                userNameFound = true;
+                break;
             }
+
         }
+
 
 
         if (userNameFound) {
 
             sendMessage("Please Enter Password: ");
             clientResponse = (String) in.readObject();
-            password = clientResponse;
 
 
-            while (passwordFound == false) {
-
-                for (int i = 0; i < accounts.size(); i++) {
-
-                    if (accounts.get(i).getPassword().equalsIgnoreCase(password)) {
-                        passwordFound = true;
-                        accountLocation = i;
-
-
-                    }
-
-                    if (i == accounts.size()) {
-                        sendMessage("Incorrect Password.");
-                        break;
-
-                    }
+            for (Account account : accounts) {
+                if (account.getPassword().equalsIgnoreCase(clientResponse)) {
+                    passwordFound = true;
+                    break;
                 }
 
             }
+
 
         }
 
 
         if (userNameFound && passwordFound == true) {
 
-
             System.out.println("User Logged in!");
             showLoggedInMenu();
+
+
         } else if (userNameFound == false) {
+
+            sendMessage("Sorry, Username not found. Press any key to return to menu");
+            clientResponse = (String) in.readObject();
             mainMenu();
+
         } else if (passwordFound == false) {
+
+            sendMessage("Sorry, Password not found. Press any key to return to menu");
+            clientResponse = (String) in.readObject();
             mainMenu();
         }
 
-
-
-        // logout
 
     }
 
@@ -393,7 +301,7 @@ class ClientServiceThread extends Thread {
                 + "\n 5. Logout ");
         try {
             menuInput = (String) in.readObject();
-            //int a = (Integer) in.readObject();
+
 
 
         } catch (IOException e) {
@@ -446,11 +354,9 @@ class ClientServiceThread extends Thread {
                 oos.writeObject(accounts);
 
 
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
 
 
             mainMenu();
@@ -479,7 +385,7 @@ class ClientServiceThread extends Thread {
                 name = clientResponse;
 
                 accounts.get(accountLocation).setName(name);
-                sendMessage("Name Changed Successfully, Press 1 to Return to Menu");
+                sendMessage("Name Changed Successfully, Press any key to Return to Menu");
                 clientResponse = (String) in.readObject();
                 break;
 
@@ -490,7 +396,7 @@ class ClientServiceThread extends Thread {
                 address = clientResponse;
 
                 accounts.get(accountLocation).setAddress(address);
-                sendMessage("Address Changed Successfully, Press 1 to Return to Menu");
+                sendMessage("Address Changed Successfully, Press any key to Return to Menu");
                 clientResponse = (String) in.readObject();
                 break;
 
@@ -501,7 +407,7 @@ class ClientServiceThread extends Thread {
                 userName = clientResponse;
 
                 accounts.get(accountLocation).setUserName(userName);
-                sendMessage("UserName Changed Successfully, Press 1 to Return to Menu");
+                sendMessage("UserName Changed Successfully, Press any key to Return to Menu");
                 clientResponse = (String) in.readObject();
                 break;
 
@@ -512,7 +418,7 @@ class ClientServiceThread extends Thread {
                 password = clientResponse;
 
                 accounts.get(accountLocation).setPassword(password);
-                sendMessage("Password Changed Successfully, Press 1 to Return to Menu");
+                sendMessage("Password Changed Successfully, Press any Key to Return to Menu");
                 clientResponse = (String) in.readObject();
                 break;
 
@@ -532,7 +438,7 @@ class ClientServiceThread extends Thread {
         accounts.get(accountLocation).setBalance(1, amount);
         accounts.get(accountLocation).addTransaction(1, amount);
 
-        sendMessage("Amount €" + amount + " Lodged Succesfully. Press 1 to return to Menu");
+        sendMessage("Amount €" + amount + " Lodged Succesfully. Press any key to return to Menu");
         clientResponse = (String) in.readObject();
 
 
@@ -548,7 +454,7 @@ class ClientServiceThread extends Thread {
         sendMessage("\nPlease Enter Withdrawal Amount: ");
         amount = Double.parseDouble((String) in.readObject());
 
-        if (accounts.get(accountLocation).getBalance() - amount <= -1000){
+        if (accounts.get(accountLocation).getBalance() - amount <= -1000) {
 
             sendMessage("Sorry Insufficient funds, €1000 credit limit reached!, Press any key to return.");
             clientResponse = (String) in.readObject();
@@ -559,7 +465,7 @@ class ClientServiceThread extends Thread {
         accounts.get(accountLocation).setBalance(2, amount);
         accounts.get(accountLocation).addTransaction(2, amount);
 
-        sendMessage("\nAmount €" + amount + " Withdrawn Successfully. Press 1 to return to Menu");
+        sendMessage("\nAmount €" + amount + " Withdrawn Successfully. Press any Key to return to Menu");
         clientResponse = (String) in.readObject();
 
 
@@ -570,7 +476,7 @@ class ClientServiceThread extends Thread {
     public void viewLast10Transactions() throws IOException, ClassNotFoundException {
 
 
-        sendMessage("Q: " + accounts.get(accountLocation).getLast10Transactions() + " Press 1 to return to menu");
+        sendMessage("Transaction History: " + accounts.get(accountLocation).getLast10Transactions() + " Press any Key to return to menu");
         clientResponse = (String) in.readObject();
 
 
