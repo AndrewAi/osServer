@@ -12,32 +12,47 @@ import java.util.UUID;
 
 public class EchoServer {
     public static void main(String[] args) throws Exception {
+        // Create a new socket connection
         ServerSocket m_ServerSocket = new ServerSocket(2004, 10);
         int id = 0;
+        // while serverSocket is accepting
         while (true) {
+            // accept incoming client connections
             Socket clientSocket = m_ServerSocket.accept();
+            //take the incoming client connection and pass it onto a new thread to be handled.
+            // in this way may client connections can be handled at once, making the server multi threaded.
             ClientServiceThread cliThread = new ClientServiceThread(clientSocket, id++);
+            // start each subsquent thread. which will lead below to the public void run method. where the thead will run.
             cliThread.start();
         }
     }
 }
 
+// class that contains information on each socket connection within each thread.
 class ClientServiceThread extends Thread {
+
     Socket clientSocket;
     String clientResponse;
     int clientID = -1;
-    boolean running = true;
     ObjectOutputStream out;
     ObjectInputStream in;
 
+    // constructor gets called above in EchoServer inner class and is passed incoming client socket connection information.
+    // as well as client id.
+    // as each client request comes through it is put into a new thread and passed through to this construcotr.
     ClientServiceThread(Socket s, int i) {
         clientSocket = s;
         clientID = i;
     }
 
 
+    // array list that holds objects of type Account.
     private ArrayList<Account> accounts = new ArrayList<Account>();
+
+    // account location is to hold the array index of the account has been logged in succesfully.
     private int accountLocation = 0;
+
+    // Variables below used to hold intial client input response
     private String name;
     private String address;
     private String accountNumber;
@@ -45,27 +60,40 @@ class ClientServiceThread extends Thread {
     private String password;
 
 
+    // method used to send message to the client
     void sendMessage(String msg) {
         try {
+            // send an object to the client
             out.writeObject(msg);
+            // clear the buffer to make sure nothing is left over in it.
             out.flush();
             System.out.println("client>> " + msg);
+
+            // if there was a input/output problem catch it.
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
     }
 
+    // run the thread, if there are multiple connections/ threads this is where they will be run.
     public void run() {
-        System.out.println("Accepted Client : ID - " + clientID + " : Address - "
-                + clientSocket.getInetAddress().getHostName());
+
+
+        // create an object stream to the connected client. this is basically a bridge used to send messages to the
+        // client.
         try {
             out = new ObjectOutputStream(clientSocket.getOutputStream());
             out.flush();
+
+            // create an input stream with connected client to accept incoming commuincations/messages from client
             in = new ObjectInputStream(clientSocket.getInputStream());
+
+            // print out information of the accpeted client connection
             System.out.println("Accepted Client : ID - " + clientID + " : Address - "
                     + clientSocket.getInetAddress().getHostName());
 
 
+            // do below while loop while userInput is not equal to exit. keep the program running.
             do {
                 try {
 
@@ -78,6 +106,7 @@ class ClientServiceThread extends Thread {
                 }
 
             } while (!clientResponse.equalsIgnoreCase("exit"));
+
 
             System.out.println("Ending Client : ID - " + clientID + " : Address - "
                     + clientSocket.getInetAddress().getHostName());
@@ -98,7 +127,6 @@ class ClientServiceThread extends Thread {
         // then read in objects from file and add to accounts list
 
 
-
         // if file exists read objects from file. while file not eof
         // add objects to array while file not eof.
         // if file does not exist , tell user no accounts exist so to register an account.
@@ -106,29 +134,37 @@ class ClientServiceThread extends Thread {
         try {
 
 
-
+            // create file input stream and pass it the name of the file that holds the accounts.
+            // the file object.ser is used to hold the accounts when the program is not running, after program has been shutdown.
             FileInputStream fis = new FileInputStream("object.ser");
             ObjectInputStream ois = new ObjectInputStream(fis);
 
+            // if the accounts array list is not empty. then clear/empty it, this is used to avoid duplication of accounts in array list.
             if (!accounts.isEmpty()) {
                 accounts.clear();
             }
 
+            // read in accounts from file and add them to the array list.
             accounts = (ArrayList<Account>) ois.readObject();
 
 
-            for (Account account: accounts) {
+            // used to make sure the program is running properly.
+            for (Account account : accounts) {
 
                 System.out.println("Name : " + account.getName());
             }
 
 
+            // if there is a problem getting the file, or if doesnt exits enter the catch.
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+
             sendMessage("Welcome, No Accounts Exist, Please Press any key to register Account");
             clientResponse = (String) in.readObject();
             register();
 
+        } catch (ClassNotFoundException es) {
+            es.printStackTrace();
         }
 
 
@@ -186,12 +222,8 @@ class ClientServiceThread extends Thread {
             System.out.println("Password: " + password);
 
 
-            // TODO  prompt user to confirm details are correct
-            // or re-enter them
-
-
-
-
+            // details entered by user, have been stored in tempoery variables that will now be added to an object of Type Account.
+            // the object will be added to the accounts array list.
             accounts.add(new Account(name, address, accountNumber, userName, password, 0));
 
 
@@ -238,8 +270,11 @@ class ClientServiceThread extends Thread {
         clientResponse = (String) in.readObject();
         userName = clientResponse;
 
+        // for every account in the accounts array list check if the username enter by client matches one in the accounts
+        // array list on the serverside.
         for (Account account : accounts) {
             if (account.getUserName().equalsIgnoreCase(clientResponse)) {
+                // if there is a match, break out of the for loop. and continue on
                 userNameFound = true;
                 break;
             }
@@ -247,15 +282,17 @@ class ClientServiceThread extends Thread {
         }
 
 
-
         if (userNameFound) {
 
             sendMessage("Please Enter Password: ");
             clientResponse = (String) in.readObject();
 
-
+            int i = 0;
             for (Account account : accounts) {
+                i++;
                 if (account.getPassword().equalsIgnoreCase(clientResponse)) {
+                    // if password is matched, account location is set to the array index in which there was a match.
+                    accountLocation = i - 1;
                     passwordFound = true;
                     break;
                 }
@@ -293,6 +330,7 @@ class ClientServiceThread extends Thread {
 
         String menuInput = "";
 
+        // accountLocation is used to got to array index, for the account that is logged in.
         sendMessage("\nAvailable Balance: € " + accounts.get(accountLocation).getBalance()
                 + "\n 1. Change your Account Details "
                 + "\n 2. Make Lodgement "
@@ -301,7 +339,6 @@ class ClientServiceThread extends Thread {
                 + "\n 5. Logout ");
         try {
             menuInput = (String) in.readObject();
-
 
 
         } catch (IOException e) {
@@ -338,6 +375,7 @@ class ClientServiceThread extends Thread {
 
             File file = new File("object.ser");
 
+            // to avoid duplication of accounts in the file, if the file exits, clear it first then fill with accounts.
             if (file.exists()) {
 
                 if (file.delete()) {
@@ -435,6 +473,7 @@ class ClientServiceThread extends Thread {
         sendMessage("Please Enter Lodgement Amount: ");
         amount = Double.parseDouble((String) in.readObject());
 
+        // int 1 used to singal that this is a lodgement.
         accounts.get(accountLocation).setBalance(1, amount);
         accounts.get(accountLocation).addTransaction(1, amount);
 
@@ -454,6 +493,7 @@ class ClientServiceThread extends Thread {
         sendMessage("\nPlease Enter Withdrawal Amount: ");
         amount = Double.parseDouble((String) in.readObject());
 
+        // if current balance minus the proposed withdrawal amount will be less then -1000, do not allow withdraw.
         if (accounts.get(accountLocation).getBalance() - amount <= -1000) {
 
             sendMessage("Sorry Insufficient funds, €1000 credit limit reached!, Press any key to return.");

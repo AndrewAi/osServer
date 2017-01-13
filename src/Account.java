@@ -8,36 +8,30 @@ import java.util.*;
 /**
  * Created by AndrewIrwin on 01/01/2017.
  */
+
+// implements Serilizable so that the objects can be written to file in EchoServer class.
 public class Account implements Serializable {
 
 
+    // Member Variables
     private String Name;
     private String Address;
-    private String accNumber;
+    private String accountNumber;
     private String userName;
     private String password;
     private double balance;
-    private Queue<String> q = new LinkedList<String>();
+    private Queue<String> transactions = new LinkedList<String>();
 
 
-
-
-
-
-    public Account(String name, String address, String accNumber, String userName, String password, double balance) {
+    // Constructor. use to construct object whenver an account is created.
+    public Account(String name, String address, String accountNumber, String userName, String password, double balance) {
         Name = name;
         Address = address;
-        this.accNumber = accNumber;
+        this.accountNumber = accountNumber;
         this.userName = userName;
         this.password = password;
         this.balance = balance;
     }
-
-
-
-
-
-
 
 
     public String getAddress() {
@@ -56,12 +50,12 @@ public class Account implements Serializable {
         Name = name;
     }
 
-    public String getaccNumber() {
-        return accNumber;
+    public String getaccountNumber() {
+        return accountNumber;
     }
 
-    public void setaccNumber(String accNumber) {
-        this.accNumber = accNumber;
+    public void setaccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     public String getUserName() {
@@ -81,17 +75,16 @@ public class Account implements Serializable {
     }
 
 
-
     public double getBalance() {
         return balance;
     }
 
+    // one method used to lodge and withdraw.
     public void setBalance(int option, double balance) {
 
 
-
         if (option == 1)
-        this.balance += balance;
+            this.balance += balance;
 
 
         else if (option == 2)
@@ -99,35 +92,33 @@ public class Account implements Serializable {
     }
 
 
+    // addTransaction used to record last 10 transactions history
+    public void addTransaction(int option, double transaction) {
 
-
-
-    public void addTransaction(int option, double transaction){
 
         String qTransaction;
 
 
-        if (q.size() >= 10)
-            q.remove();
+        if (transactions.size() >= 10)
+            transactions.remove();
 
 
         qTransaction = Double.toString(transaction);
 
         if (option == 1) {
             qTransaction = "+" + qTransaction;
-        }
-
-        else if (option == 2) {
+        } else if (option == 2) {
             qTransaction = "-" + qTransaction;
         }
 
-        q.add(qTransaction);
+        transactions.add(qTransaction);
 
     }
 
 
+    // returns a Queue of type string that contains the last 10 transactions on the account.
     public Queue<String> getLast10Transactions() {
-        return q;
+        return transactions;
     }
 
 
