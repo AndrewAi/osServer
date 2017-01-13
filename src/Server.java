@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class EchoServer {
+public class Server {
     public static void main(String[] args) throws Exception {
         // Create a new socket connection
         ServerSocket m_ServerSocket = new ServerSocket(2004, 10);

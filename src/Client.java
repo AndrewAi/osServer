@@ -7,7 +7,7 @@ import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
-public class Requester {
+public class Client {
 
     Socket requestSocket;
     ObjectOutputStream out;
@@ -16,7 +16,7 @@ public class Requester {
     String ipaddress;
     Scanner stdin;
 
-    Requester() {
+    Client() {
     }
 
     void run() {
@@ -89,7 +89,7 @@ public class Requester {
     // when the main method is called, create a new instance of the Requester class.
     // and call its run method. which  is located above,
     public static void main(String args[]) {
-        Requester client = new Requester();
+        Client client = new Client();
         client.run();
     }
 }
