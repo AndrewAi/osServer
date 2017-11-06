@@ -4,7 +4,7 @@ GMIT, Operating Systems 1, Project, Semester 1 2016/17. MultiThreaded TCP  Clien
 
 # Project Brief:
 Your	project	is	to	write	a	Multi-threaded	TCP	Server	Application	which	allows	multiple	customers to	
-update	their	bank	accounts	and	send	payments	to	other	bank	accounts.	The	service should	allow	the	
+update	their	bank	accounts, make lodgements and withdrawals.	The	service should	allow	the	
 users	to:
 
 1. Register with the	system (
