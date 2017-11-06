@@ -7,12 +7,12 @@ Your	project	is	to	write	a	Multi-threaded	TCP	Server	Application	which	allows	mu
 update	their	bank	accounts	and	send	payments	to	other	bank	accounts.	The	service should	allow	the	
 users	to:
 
-1. Register with the	system
+1. Register with the	system (
 • Name
 • Address
 • Bank	A/C	Number
 • Username	
-• Password
+• Password )
 2. Log-in	to	the	banking system	from the	client	application	to the	server	application.
 3. Change	customer	details.
 4. Make	Lodgements	to	their	Bank	Account.
@@ -26,24 +26,26 @@ transactions.
 3. When	the	user	logs	in	they	should	receive	their	current	balance.
 
 
-#Design Decisions:
+# Design Decisions:
 
 I tried to keep my design as close to what I know a real Bank application/ mobile banking app is like.
+
 This infuenced me in parts, such as not asking the user to create their own account, I generate a unique account for them.
 As in a real banking application you would not be asked to create your own account number.
 
 I used an arraylist that holds objects of type Account. Account is a class that holds member variables (Name,Address, etc) and a construtor
 to create Account objects.
-The accounts Array list was a simple lightway to hold all the accounts and used to itereate through the accounts and check information (i.e when user account login creditionals during
+The accounts Array list was a simple lightway to hold all the accounts and used to itereate through the accounts and check information (i.e when checking user account login creditionals during
 authentication.) and also to selectively pick a requested account.
 
 Once the user succesfully logs in. the accountLocation integer variable is used to save the array index of the account that is logged in.
 
 When you run the program intially if no accounts exist you will be asked to create an account.
-Then you will have the optiom to Login or create an account.
+Then you will have the option to Login or create an account.
 
 once logged in you will be presented with menu only for users that are logged in.
-Options presented : 1. change details, 2. Make Lodgement, 3. Make Withdrawal, 4. Logout.
+Options presented: 
+1. change details, 2. Make Lodgement, 3. Make Withdrawal, 4. Logout.
 
 #### Change Details:
 Rather then having the user enter in all their details again. I chose to ask them with details they would like to change first,
@@ -64,7 +66,8 @@ Also in the bankground when the user logs out the updated accounts (i.e if the u
 
 #To Run this application :
 download or clone this repo and run Server.java first. which will start the server and have it listen for incoming client-socket requests.
-then run Client.java . will be then asked to enter the public ip address of the computer that Server.java is running on.
+then run Client.java. 
+You will be then asked to enter the public ip address of the computer that Server.java is running on.
 When I tested this locally on my laptop it was the ip address of my laptop.
 Whem I tested on the Amazon websever it was the public Ip address.
 
