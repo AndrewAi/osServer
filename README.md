@@ -64,12 +64,12 @@ the user can logut and be presented with the main menu (login,register account).
 Also in the bankground when the user logs out the updated accounts (i.e if the user makes a lodgment) will be written to file.
 
 
-#To Run this application :
+#### To Run this application :
 download or clone this repo and run Server.java first. which will start the server and have it listen for incoming client-socket requests.
 then run Client.java. 
 You will be then asked to enter the public ip address of the computer that Server.java is running on.
 When I tested this locally on my laptop it was the ip address of my laptop.
 Whem I tested on the Amazon websever it was the public Ip address.
 
-
-Motivated by Paul Simon and others ;)
+______
+Motivated by Simon & Garfunkel and others ;)
